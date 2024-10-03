@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .form-container {
+            width: 90%;
+            height: 90%;
+            padding: 20px;
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 20px 5px #FFD700;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        img#logo {
+            width: 80px;
+            position: absolute;
+            top: 17px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: spin 10s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: translateX(-50%) rotate(0deg);
+            }
+            to {
+                transform: translateX(-50%) rotate(360deg);
+            }
+        }
+        p#currentDate {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+        }
+
+        /* Style for the dropdown and its placement */
+        .dropdown-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        label {
+            font-size: 14px;
+            color: #FFD700;
+        }
+
+        select {
+            font-family: 'Orbitron', sans-serif;
+            background-color: black;
+            color: white;
+            border: 2px solid #FFD700;
+            padding: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        input[type="text"], textarea {
+            width: 90%;
+            padding: 5px;
+            margin: 5px 0;
+            border: none;
+            outline: none;
+            background-color: black;
+            color: white;
+            border-bottom: 2px solid #FFD700;
+            text-align: center;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-bottom: 2px solid white;
+        }
+
+        button {
+            background-color: #FFD700;
+            color: black;
+            cursor: pointer;
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            outline: none;
+            text-align: center;
+        }
+
+        button:hover {
+            background-color: white;
+        }
+
+        .radio-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            justify-items: center;
+            align-items: center;
+            width: 100%;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            width: 120px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 5px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .separator {
+            border-left: 2px solid #FFD700;
+            height: 150px;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .radio-group-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14px;
+            align-self: flex-start;
+        }
+
+        textarea {
+            resize: none;
+            overflow: hidden;
+        }
+
+        .graph {
+            display: flex;
+            justify-content: space-around;
+            width: 90%;
+            font-size: 12px;
+        }
+
+        .view-past-data {
+            background-color: #FFD700;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin: 0 auto;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .view-past-data:hover {
+            background-color: white;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            width: 80px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 10px;
+            font-size: 10px;
+            transition: opacity 0.3s;
+        }
+
+        .view-past-data:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .bar {
+            display: inline-block;
+            height: 10px;
+            margin-left: 10px;
+            vertical-align: middle;
+            background-color: grey;
+            transition: width 0.3s ease;
+        }
+
+        .snooze-bar {
+            background-color: lightblue;
+            width: 0;
+        }
+
+        .close-bar {
+            background-color: lightgreen;
+            width: 0;
+        }
+
+        .escalate-bar {
+            background-color: red;
+            width: 0;
+        }
+
+        .deescalate-bar {
+            background-color: lightyellow;
+            width: 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <img src="C:/Users/JamesPerez/Downloads/T1 Enterprise/T1 Enterprise Clock/Form Tracker/12222560.png" alt="Logo" id="logo">
+        <p>Date: <span id="currentDate"></span></p>
+
+        <!-- Dropdown in top-right corner -->
+        <div class="dropdown-container">
+            <label for="name">Select Name:</label>
+            <select id="name" required>
+                <option value="" disabled selected></option>
+                <option value="James">James</option>
+                <option value="Andie">Andie</option>
+                <option value="Jcoo">Jcoo</option>
+                <option value="Eloise">Eloise</option>
+                <option value="Jammy">Jammy</option>
+                <option value="Aaron">Aaron</option>
+                <option value="Da">Da</option>
+                <option value="Elijah">Elijah</option>
+                <option value="RD">RD</option>
+            </select>
+        </div>
+
+        <!-- Hidden email field that will be populated based on the name selection -->
+        <input type="hidden" id="email">
+
+        <form id="customForm">
+            <input type="text" id="intercomID" name="intercomID" placeholder="Intercom ID" required>
+            <input type="text" id="issue" name="issue" placeholder="Issue" required>
+
+            <div class="radio-section">
+                <!-- Severity -->
+                <div class="radio-group">
+                    <p class="radio-group-title">Severity</p>
+                    <label><input type="radio" name="severity" value="sev1" required> sev1</label>
+                    <label><input type="radio" name="severity" value="sev2"> sev2</label>
+                    <label><input type="radio" name="severity" value="sev3"> sev3</label>
+                    <label><input type="radio" name="severity" value="sev4"> sev4</label>
+                </div>
+
+                <!-- Separator -->
+                <div class="separator"></div>
+
+                <!-- Action -->
+                <div class="radio-group">
+                    <p class="radio-group-title">Action</p>
+                    <label><input type="radio" name="action" value="Snooze" required> Snooze</label>
+                    <label><input type="radio" name="action" value="Close"> Close</label>
+                    <label><input type="radio" name="action" value="Escalate"> Escalate</label>
+                    <label><input type="radio" name="action" value="De-Escalate"> De-Escalate</label>
+                </div>
+            </div>
+
+            <textarea id="remarks" name="remarks" placeholder="Remarks (Optional)" rows="1"></textarea>
+            <input type="hidden" id="email" name="email" value="user@example.com">
+            <button type="submit">Submit</button>
+        </form>
+        
+        <div class="graph">
+            <div>Snooze: <div class="bar snooze-bar" id="snoozeBar"></div><span id="snoozeCount"></span></div>
+            <div>Close: <div class="bar close-bar" id="closeBar"></div><span id="closeCount"></span></div>
+            <div>Escalate: <div class="bar escalate-bar" id="escalateBar"></div><span id="escalateCount"></span></div>
+            <div>De-Escalate: <div class="bar deescalate-bar" id="deEscalateBar"></div><span id="deEscalateCount"></span></div>
+        </div>
+
+        <div class="view-past-data" onclick="window.open('https://docs.google.com/spreadsheets/d/1sSz1xYwNo4Falr2a5K2VZPrC_n7MB5g2LP7mGStKK3Y/edit#gid=125181587')">
+            <span class="tooltip">View Past Data</span>
+        </div>
+    </div>
+
+    <script>
+document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+
+// Hardcoded name-email mapping
+const nameEmailMapping = {
+    "James": "james.perez@c-openai.com",
+    "Andie": "Anrym.Quinones@c-openai.com",
+    "Jcoo": "jeremy.montemayor@c-openai.com",
+    "Eloise": "Eloisa.Penola@c-openai.com",
+    "Jammy": "jacqueline.macaraeg@c-openai.com",
+    "Aaron": "Aaron.Coopera@c-openai.com",
+    "Da": "daryl.alzaga@c-openai.com",
+    "Elijah": "Eleazar.Abucejo@c-openai.com",
+    "RD": "roden.delosreyes@c-openai.com"
+};
+
+// On page load, check if there's a saved name in localStorage
+window.onload = function() {
+    const savedName = localStorage.getItem('selectedName');
+    if (savedName) {
+        document.getElementById('name').value = savedName;
+        document.getElementById('email').value = nameEmailMapping[savedName];
+    }
+};
+
+// Dropdown selection event listener
+document.getElementById('name').addEventListener('change', function() {
+    const selectedName = this.value;
+    const email = nameEmailMapping[selectedName];
+    document.getElementById('email').value = email;  // Set the hidden email field
+
+    // Save the selected name to localStorage
+    localStorage.setItem('selectedName', selectedName);
+});
+
+// Initialize the counts for each action
+let snoozeCount = 0;
+let closeCount = 0;
+let escalateCount = 0;
+let deEscalateCount = 0;
+
+// Function to update the bar widths dynamically
+function updateBars() {
+    document.getElementById('snoozeBar').style.width = snoozeCount * 20 + "px";
+    document.getElementById('closeBar').style.width = closeCount * 20 + "px";
+    document.getElementById('escalateBar').style.width = escalateCount * 20 + "px";
+    document.getElementById('deEscalateBar').style.width = deEscalateCount * 20 + "px";
+
+    // Update the text count next to each bar
+    document.getElementById('snoozeCount').textContent = snoozeCount;
+    document.getElementById('closeCount').textContent = closeCount;
+    document.getElementById('escalateCount').textContent = escalateCount;
+    document.getElementById('deEscalateCount').textContent = deEscalateCount;
+}
+
+// Listen to the form submission
+document.getElementById('customForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Get the selected action from the form
+    const selectedAction = document.querySelector('input[name="action"]:checked').value;
+
+    // Increment the respective count based on the action selected
+    switch (selectedAction) {
+        case "Snooze":
+            snoozeCount++;
+            break;
+        case "Close":
+            closeCount++;
+            break;
+        case "Escalate":
+            escalateCount++;
+            break;
+        case "De-Escalate":
+            deEscalateCount++;
+            break;
+    }
+
+    // Update the bar graph with the new counts
+    updateBars();
+    
+    // Reset the form but keep the name field
+    document.getElementById('customForm').reset();
+    const savedName = localStorage.getItem('selectedName');
+    if (savedName) {
+        document.getElementById('name').value = savedName;
+        document.getElementById('email').value = nameEmailMapping[savedName];
+    }
+});
+
+// Handle form submission via fetch API
+document.getElementById('customForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const formAction = 'https://script.google.com/a/macros/c-openai.com/s/AKfycbwxheALeVvI-FoifE0e0tc3-yc7M2gm-Uoh2Cda1MGN-U7vejdqak0PiSn3vnkdWXAm/exec';  // Replace with your Google Apps Script Web App URL
+    const formData = new FormData(this);
+
+    // Send form data as a POST request
+    fetch(formAction, {
+        method: 'POST',
+        body: formData
+    }).then(response => response.text())
+      .then(data => {
+          console.log('Success:', data);
+          alert('Form submitted successfully!');
+      }).catch(error => {
+          console.error('Error:', error);
+          alert('Form submission failed.');
+      });
+
+    // Reset the form after submission
+    this.reset();
+});
+    </script>
+</body>
+</html>
